@@ -1,0 +1,214 @@
+Spring Boot入门
+	简化Spring应用开发的一个框架
+	整个Spring技术栈的一个大整合
+	
+	Spring Boot 简化Spring，约定大于配置，去繁化简
+	
+	背景：J2EE开发笨重，配置繁多，开发效率低下，第三方技术集成困难
+	
+	Spring Boot -> J2EE一站式解决方案
+	Spring Cloud -> 分布式整体解决方案
+	
+	优点：
+		1.快速创建独立运行的 Spring 项目以及主流的框架集成
+		2.使用嵌入式的 Servlet 容器,应用无需打成 war 包
+		3.Starters(启动器)自动依赖与版本控制
+		4.大量的自动配置,简化开发,全都有默认值(可以修改)
+		5.无需配置 XML ,开箱即用
+		
+	入门容易,精通难
+
+	
+	
+	2.微服务
+		微服务，架构风格（服务微化）
+		一个应用是一组小型服务，通过HTTP方式进行互通
+		
+		单体应用
+		所有东西（页面，代码）全部放到一个应用中，运行时直接把整个项目打包成一个war包放到服务器运行
+		
+		好处：
+			1.开发，测试简单，因为在一个应用中，不会牵扯到多个应用中之间的互联，互调
+			2.部署也简单，直接把应用打包成war部署到服务器上即可
+			3.水平扩展也简单，当负载能力出现问题，将相同应用复制多份，都执行，通过负载均衡，提高并发能力
+		
+		坏处：
+			1.牵一发动全身，可能因为一个小小的修改，就要重新部署，或者运行整个项目
+			2.项目需求过多，应用，分工合作，维护问题太大
+	
+		1.pom文件
+				父项目
+				<parent>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starters</artifactId>
+					<version>1.5.9.RELEASE</version>
+				</parent>
+			它的父项目
+				<parent>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-dependencies</artifactId>
+					<version>1.5.9.RELEASE</version>
+					<relativePath>../../spring-boot-dependencies</relativePath>
+				</parent>
+			
+			Spring Boot 的版本仲裁中心
+			以后导入以来不需要写版本了
+			注：如果没有在dependencies里面管理的依赖还是需要声明版本
+			
+		2.启动器
+			<dependencies>
+				<dependency>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starter-web</artifactId>
+				</dependency>
+			</dependencies>
+			
+			Spring Boot 将所有的功能场景都抽取出来，做成一个个的 starters（启动器），只需在项目中导入需要用的启动器，所有的依赖都会被导入
+		
+		
+	2.主程序类，主入口
+
+		@SpringBootApplication:标注这个类是 Spring Boot的主配置类，只要运行main入口就可以启动
+		
+		
+		@SpringBootConfiguration:Spring Boot配置类
+		标注在某个类上，说明这是一个Spring Boot配置类
+		
+			@Configuration：配置类
+		
+		
+		@EnableAutoConfiguration：开启自动配置功能
+		以前需要我们自己配置的东西，SpringBoot帮我们自动配置
+		
+			@AutoConfigurationPackage：自动配置包
+			@Import（Registar.class）
+				注入一个组件，将主配置类所在的包下，以及下面所有子包里面的组件全部扫面到Spring容器中
+				
+		@EnableAutoConfigurationImportSelector：导入哪些组件的选择器
+		将所需要的组件以全类名的形式返回，这些组件都会添加到容器中
+		有了自动配置类，免去了手动导入配置组件的工作
+		
+		简单部署：
+		
+		<build>
+			<plugins>
+				<plugin>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-maven-plugin</artifactId>
+				</plugin>
+			</plugins>
+		</build>
+		
+		打成jar包之后使用 java -jar 命令执行即可
+		
+		
+	2.配置文件
+	
+	SpringBoot使用了一个全局的配置文件，文件名是固定的
+	
+	application.properties
+	application.yml
+	
+	配置文件的作用：修改SpringBoot自动配置的默认值；SpringBoot在底层配置好的
+	
+	YAML
+	
+	Yet Another Markup Language(另一种标记语言)
+	
+	YAML Ain't Markup Language(不只是标记语言)
+	
+	标记语言：
+	
+		之前的配置文件，大多都是XML文件
+		
+		YAML:以数据为中心，写法简洁，不需要重复开闭标签
+		
+		YAML：配置文件
+		
+			server:
+				port:8081
+				
+		XML配置：
+		
+			<server>
+				<port>8081</port>
+			</server>
+				
+		2.YAML语法：
+			1.基本语法
+				K:（空格）V:表示一对键值对（空格必须有）;
+				以空格的缩进来控制层级关系：只要左对齐的一列数据，都是同一个层级的数据（属性和值也是大小写）
+				
+			2.值的写法
+			
+				数字，字符串，布尔类型都可以直接写
+				
+				按照k:v直接写
+				"":双引号：不会转义字符串的特殊字符，比如
+					Name:"张三 \n 李四"
+					之后输出：张三
+								李四
+				'':单引号：会转义特殊字符，特殊字符会被标称一个字符串的数据
+					Name:'张三 \n 李四'
+					之后输出：张三 \n 李四
+			
+			对象赋值的方式
+			
+				①k:v方式
+				student:
+					 name: zhangsan
+					 age: 18
+					 
+				②行内
+				student: {name: zhangsan,age: 18}	 
+				
+				
+				数组(list,Set)
+						用-表示数组中的元素
+						lists:
+							- list1
+							- list2
+					
+                        lists: [list1,list2]					
+		
+		        @Value获取值和@ConfigurationProperties获取值比较
+				
+				区别			@ConfigurationProperties			@Value
+				功能			批量注入配置文件中的属性			一个一个指定
+				SpEL			不支持								支持
+				复杂类型封装	支持								不支持
+				JSR303数据校验	支持								不支持
+		
+				3.@propertySource @ImportResource	@Bean
+				@PropertySource:加载指定的配置文件
+				@PropertySource(value = {"classpath:student.properties"})
+				@Component
+				@ConfigurationProperties(prefix = "student")
+				
+				@ImportResource:导入Spring的配置文件，让配置文件的内容生效
+				Spring Boot里面没有Spring的配置文件，我们自己编写，也无法自动识别，想让Sping的配置文件生效，只能通过@ImportResource标注到主文件类上
+				@ImportResource("classpath:bean.xml")
+				
+				Spring Boot不推荐使用配置文件的形式
+				
+				1.占位符 ${random.int}
+				
+
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
